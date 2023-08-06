@@ -6,7 +6,7 @@ const {
   DB_USER, DB_PASSWORD, DB_HOST,
 } = process.env;
 
-const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/dogs`, {
+const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/your_database_name`, {
   logging: false, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
 });
@@ -30,15 +30,63 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
-const { Dog, Temperamento } = sequelize.models;
+const {
+  CommonUser,
+  PremiumUser,
+  TeacherUser,
+  Exercise,
+  Weight,
+  Calories,
+  BloodPressure,
+  Nutrition,
+  Sleep,
+  WaterIntake,
+  HeartRate,
+  Post,
+  Workout,
+} = sequelize.models;
 
 // Aca vendrian las relaciones
-// Product.hasMany(Reviews);
+// Por ejemplo, si deseas establecer relaciones entre los modelos, puedes hacerlo aquí.
 
-Temperamento.belongsToMany(Dog, {through: "dogs_temperamentos"})
-Dog.belongsToMany(Temperamento, {through: "dogs_temperamentos"})
+// Relaciones entre User y los diferentes tipos de usuarios
+CommonUser.belongsTo(User);
+PremiumUser.belongsTo(User);
+TeacherUser.belongsTo(User);
+
+// Relaciones entre User y los otros modelos
+User.hasMany(Exercise);
+User.hasMany(Weight);
+User.hasMany(Calories);
+User.hasMany(BloodPressure);
+User.hasMany(Nutrition);
+User.hasMany(Sleep);
+User.hasMany(WaterIntake);
+User.hasMany(HeartRate);
+User.hasMany(Post);
+User.hasMany(Workout);
+
+// Relación entre Exercise y Workout
+Exercise.hasMany(Workout);
+Workout.belongsTo(Exercise);
+
+// Relación entre User y Post
+User.hasMany(Post);
+Post.belongsTo(User);
 
 module.exports = {
-  ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
-  conn: sequelize,     // para importart la conexión { conn } = require('./db.js');
+  CommonUser,
+  PremiumUser,
+  TeacherUser,
+  Exercise,
+  Weight,
+  Calories,
+  BloodPressure,
+  Nutrition,
+  Sleep,
+  WaterIntake,
+  HeartRate,
+  Post,
+  Workout,
+  conn: sequelize,
 };
